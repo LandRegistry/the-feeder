@@ -1,11 +1,13 @@
 from redis import Redis
 import os
 
-redis = Redis(os.environ['REDIS_HOST'])
+url = urlparse.urlparse(app.config.get('REDIS_HOST'))
+redis_queue = app.config.get('REDIS_QUEUE_KEY')
+redis = Redis(host=url.hostname, port=url.port, password=url.password)
 
 def process_queue_items():
     while 1:
-        msg = redis.blpop('titles_queue')
+        msg = redis.blpop(redis_queue)
         try:
             print msg
             # do some real work
