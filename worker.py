@@ -1,5 +1,7 @@
 from redis import Redis
-redis = Redis('localhost')
+import os
+
+redis = Redis(os.environ['REDIS_HOST'])
 
 def process_queue_items():
     while 1:
