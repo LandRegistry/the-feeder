@@ -1,8 +1,9 @@
 from redis import Redis
 import os
+import urlparse
 
-url = urlparse.urlparse(app.config.get('REDIS_HOST'))
-redis_queue = app.config.get('REDIS_QUEUE_KEY')
+url = urlparse.urlparse(os.environ.get('REDIS_HOST'))
+redis_queue = os.environ.get('REDIS_QUEUE_KEY')
 redis = Redis(host=url.hostname, port=url.port, password=url.password)
 
 def process_queue_items():
