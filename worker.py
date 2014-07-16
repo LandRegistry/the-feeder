@@ -7,18 +7,19 @@ import json
 url = urlparse.urlparse(os.environ.get('REDIS_HOST'))
 redis_queue = os.environ.get('REDIS_QUEUE_KEY')
 redis = Redis(host=url.hostname, port=url.port, password=url.password)
+titles_api_url =  os.environ.get('TITLES_API_URL')
 
 def process_queue_items():
     while 1:
         try:
             msg = redis.blpop(redis_queue)
-
             payload = msg[1].replace('\'', '\"')
-
-            #post to public titles
+            json_data = json.loads(payload)
+            title_number = json_data['title_number']
+            title_url = "%s/%s" % (titles_api_url, title_number)
             header = {"Content-Type": "application/json"}
-
-            r = requests.post(os.environ.get('TITLES_API_URL'), data=payload, headers=header)
+            r = requests.post(title_url,  data=payload, headers=header)
+            print r.status_code
         except Exception, e:
             print e
 
