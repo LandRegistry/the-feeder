@@ -11,34 +11,31 @@ titles_api_url =  os.environ.get('TITLES_API_URL')
 
 def process_queue_items():
     while 1:
-        try:
-            msg = redis.blpop(redis_queue)
-            payload = msg[1].replace('\'', '\"')
+        try
+          msg = redis.blpop(redis_queue) #It will wait here until a message is put on the queue
+          payload = msg[1].replace('\'', '\"')
 
-            json_data = json.loads(payload)
+          json_data = json.loads(payload)
 
-            title_number = json_data.get('title_id', None)
-            property_ = json_data.get('property', None)
-            address = property_.get('address', None)
-            payment = json_data.get('payment', None)
+          title_number = json_data.get('title_id', None)
+          property_ = json_data.get('property', None)
+          address = property_.get('address', None)
+          payment = json_data.get('payment', None)
 
-            #build public title data structure
-            public_title = {"title_number": title_number,
-            "house_number" : json_data.get('house_number', None),
-            "road" : address.get('road', None),
-            "town" : address.get('town', None),
-            "postcode" : address.get('postcode', None),
-            "price_paid": payment.get('price_paid', None)
-            }
+          #build public title data structure
+          public_title = {"title_number": title_number,
+          "house_number" : json_data.get('house_number', None),
+          "road" : address.get('road', None),
+          "town" : address.get('town', None),
+          "postcode" : address.get('postcode', None),
+          "price_paid": payment.get('price_paid', None)
+          }
 
-            print public_title
-
-            title_url = "%s/%s" % (titles_api_url, title_number)
-            header = {"Content-Type": "application/json"}
-            r = requests.post(title_url,  data=json.dumps(public_title), headers=header)
-            print r.status_code
+          title_url = "%s/%s" % (titles_api_url, title_number)
+          header = {"Content-Type": "application/json"}
+          r = requests.post(title_url,  data=json.dumps(public_title), headers=header)
         except Exception, e:
-            print e
+          print e
 
 if __name__ == '__main__':
     process_queue_items()
