@@ -16,16 +16,22 @@ def process_queue_items():
             payload = msg[1].replace('\'', '\"')
 
             json_data = json.loads(payload)
-            title_number = json_data['title_id']
+
+            title_number = json_data.get('title_id', None)
+            property_ = json_data.get('property', None)
+            address = property_.get('address', None)
+            payment = json_data.get('payment', None)
 
             #build public title data structure
             public_title = {"title_number": title_number,
-            "house_number" : json_data['property']['address']['house_number'],
-            "road" : json_data['property']['address']['road'],
-            "town" : json_data['property']['address']['town'],
-            "postcode" : json_data['property']['address']['postcode'],
-            "price_paid": json_data['payment']['price_paid']
+            "house_number" : json_data.get('house_number', None),
+            "road" : address.get('road', None),
+            "town" : address.get('town', None),
+            "postcode" : address.get('postcode', None),
+            "price_paid": payment.get('price_paid', None)
             }
+
+            print public_title
 
             title_url = "%s/%s" % (titles_api_url, title_number)
             header = {"Content-Type": "application/json"}
