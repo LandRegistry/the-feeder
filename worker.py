@@ -16,25 +16,24 @@ def process_queue_items():
             payload = msg[1].replace('\'', '\"')
 
             json_data = json.loads(payload)
-
-            title_number = json_data.get('title_id', None)
-            property_ = json_data.get('property', None)
+            title_number = json_data.get('title_number', None)
+            property_ = json_data.get('property',  None)
             address = property_.get('address', None)
             payment = json_data.get('payment', None)
 
-              #build public title data structure
+            #build public title data structure
             public_title = {"title_number": title_number,
-                  "house_number" : json_data.get('house_number', None),
+                  "house_number" : address.get('house_number', None),
                   "road" : address.get('road', None),
                   "town" : address.get('town', None),
                   "postcode" : address.get('postcode', None),
-                "price_paid": payment.get('price_paid', None)
-              }
+                  "price_paid": payment.get('price_paid', None)
+            }
 
             title_url = "%s/%s" % (titles_api_url, title_number)
             header = {"Content-Type": "application/json"}
             r = requests.post(title_url,  data=json.dumps(public_title), headers=header)
-            print "Posted data to public titles api server: reposnse status code %s'" % r.status_code
+            print "Posted data to public titles api server: response status code %s'" % r.status_code
         except Exception, e:
             print e
 
