@@ -10,8 +10,6 @@ queue = Redis(host=url.hostname, port=url.port, password=url.password)
 titles_api_url = os.environ.get('TITLES_API_URL')
 search_api_url = os.environ.get('SEARCH_API_URL')
 
-destinations = [titles_api_url]
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 logger.addHandler(logging.StreamHandler())
@@ -19,9 +17,10 @@ logger.addHandler(logging.StreamHandler())
 
 class PublicTitlesWorker(object):
 
-    def __init__(self, queue,queue_key):
+    def __init__(self, queue,queue_key, destinations):
         self.queue = queue
         self.queue_key = queue_key
+        self.destinations = destinations
 
     def do_work(self):
         logger.info("Public titles worker awaiting data from  %s'" %  self.queue)
@@ -69,6 +68,9 @@ class WorkerThread(threading.Thread):
             self.worker.do_work()
 
 if __name__ == '__main__':
-    public_titles_thread = WorkerThread(queue, queue_key, PublicTitlesWorker())
+
+    destinations = [titles_api_url]
+
+    public_titles_thread = WorkerThread(PublicTitlesWorker(queue, queue_key, destinations))
     public_titles_thread.start()
 
