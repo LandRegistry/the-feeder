@@ -1,5 +1,6 @@
 The Feeder
 ======
+[![Build Status](https://travis-ci.org/LandRegistry/the-feeder.svg)](https://travis-ci.org/LandRegistry/the-feeder)
 
 Worker process to consume title json from queue.
 
