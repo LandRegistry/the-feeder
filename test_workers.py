@@ -40,3 +40,14 @@ def test_worker_should_put_data_to_destinations(mock_put):
     worker.send(titles_api_url, public_data)
 
     mock_put.assert_called_with(full_title_url, data=json.dumps(public_data), headers=headers)
+
+
+@mock.patch("redis.Redis.blpop")
+@mock.patch("requests.put")
+def test_worker_should_pull_data_from_queue(mock_put, mock_blpop):
+    worker = PublicTitlesWorker(queue, queue_key, [])
+    worker.do_work()
+
+    mock_blpop.assert_called_with(queue_key)
+
+
