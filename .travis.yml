@@ -1,0 +1,11 @@
+language: python
+python:
+- '2.7'
+install:
+- pip install -r requirements.txt
+- pip install -r requirements_test.txt
+env:
+ - REDIS_QUEUE_KEY='titles_queue'
+ - REDIS_HOST='redis://user:@localhost:6379'
+ - TITLES_API_URL='http://localhost:8005/title'
+script: py.test
