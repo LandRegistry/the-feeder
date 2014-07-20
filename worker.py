@@ -50,7 +50,7 @@ class Worker(object):
         for feed in self.feeds:
             try:
                 self.send(feed, data)
-            except Exception, e:
+            except RuntimeError as e:
                 logger.error("Encountered error %s'" % e)
 
     def send(self, feed_url, data):
@@ -61,6 +61,7 @@ class Worker(object):
             logger.info("PUT data %s to URL %s : status code %s'" %  (data, full_url, r.status_code))
         except requests.exceptions.RequestException as e:
             logger.error("Error sending %s to %s: Error %s" % (data, full_url, e))
+            raise RuntimeError
 
 
 class ConsumerThread(threading.Thread):
@@ -75,7 +76,7 @@ class ConsumerThread(threading.Thread):
         while True:
             logger.info("Public titles worker awaiting data from  %s'" %  self.queue)
             message = self.get_next_message()
-            logger.info("Public titles thread received data %s from  %s'" %  (message, self.queue))
+            logger.info("Public titles worker received data %s from  %s'" %  (message, self.queue))
             for worker in workers:
                 thread = threading.Thread(target=worker.do_work, args=(message,))
                 thread.start()
