@@ -1,10 +1,8 @@
 import mock
 import json
 import unittest
-from mock import call
 
 from worker import ConsumerThread, Worker, queue, queue_key, authenticated_filter, public_filter
-
 
 class WorkersTestCase(unittest.TestCase):
 
