@@ -5,9 +5,12 @@ import requests
 #TODO move config out. This is a mess make this into proper package with config and test config
 url = urlparse.urlparse(os.environ.get('REDIS_HOST'))
 queue_key = os.environ.get('REDIS_QUEUE_KEY')
-public_api = os.environ.get('PUBLIC_TITLES_API')
-private_api  = os.environ.get('PRIVATE_TITLES_API')
-search_api = os.environ.get('SEARCH_API')
+
+#public_api = os.environ.get('PUBLIC_TITLES_API') I think this is on the way out
+
+public_search_api = os.environ.get('PUBLIC_SEARCH_API')
+authenticated_search_api = os.environ.get('AUTHENTICATED_SEARCH_API')
+# Assumption is that Elastic search for these two are on different domains
 
 #TODO when config cleaned and package created can move this to init?
 queue = Redis(host=url.hostname, port=url.port, password=url.password)
@@ -16,13 +19,16 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 logger.addHandler(logging.StreamHandler())
 
-def extract_private(message):
+def  authenticated_filter(message):
         payload = message[1].replace('\'', '\"')
         json_data = json.loads(payload)
         return json_data
 
-def extract_public(message):
-    json_data = extract_private(message)
+#TODO change this to excluded explicitly rather
+# than include
+def public_filter(message):
+    payload = message[1].replace('\'', '\"')
+    json_data = json.loads(payload)
     title_number = json_data.get('title_number')
     property_details = json_data.get('property')
     address = property_details.get('address')
@@ -37,30 +43,27 @@ def extract_public(message):
     }
     return public_title
 
-
 class Worker(object):
 
-    def __init__(self, feeds, extract_data):
-        self.feeds = feeds
-        self.extract_data = extract_data
+    def __init__(self, feed_url, filter):
+        self.feed_url = feed_url
+        self.filter = filter
 
     def do_work(self, message):
-        data = self.extract_data(message)
-        logger.info("Extracted data %s from message %s" % (data, message))
-        for feed in self.feeds:
-            try:
-                self.send(feed, data)
-            except RuntimeError as e:
-                logger.error("Encountered error %s'" % e)
-
-    def send(self, feed_url, data):
-        headers = {"Content-Type": "application/json"}
-        full_url = "%s/%s" % (feed_url, data['title_number'])
+        data = self.filter(message)
+        logger.info("Filtered data %s from message %s" % (data, message))
         try:
-            r = requests.put(full_url,  data=json.dumps(data), headers=headers)
-            logger.info("PUT data %s to URL %s : status code %s'" %  (data, full_url, r.status_code))
+            self.send(data)
+        except RuntimeError as e:
+            logger.error("Encountered error %s'" % e)
+
+    def send(self, data):
+        headers = {"Content-Type": "application/json"}
+        try:
+            response = requests.put(self.feed_url,  data=json.dumps(data), headers=headers)
+            logger.info("PUT data %s to URL %s : status code %s'" %  (data, self.feed_url, response.status_code))
         except requests.exceptions.RequestException as e:
-            logger.error("Error sending %s to %s: Error %s" % (data, full_url, e))
+            logger.error("Error sending %s to %s: Error %s" % (data, self.feed_url, e))
             raise RuntimeError
 
 
@@ -87,10 +90,9 @@ class ConsumerThread(threading.Thread):
 
 if __name__ == '__main__':
 
-    public_feeds = [public_api, search_api]
-    private_feeds = [private_api]
-
-    workers = [Worker(public_feeds, extract_public), Worker(private_feeds, extract_private)]
+    workers = []
+    workers.append(Worker(public_search_api, public_filter))
+    workers.append(Worker(authenticated_search_api, authenticated_filter))
 
     public_titles_thread = ConsumerThread(queue, queue_key, workers)
     public_titles_thread.start()

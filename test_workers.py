@@ -3,7 +3,7 @@ import json
 import unittest
 from mock import call
 
-from worker import ConsumerThread, Worker, queue, queue_key, extract_public, extract_private
+from worker import ConsumerThread, Worker, queue, queue_key, authenticated_filter, public_filter
 
 
 class WorkersTestCase(unittest.TestCase):
@@ -28,7 +28,7 @@ class WorkersTestCase(unittest.TestCase):
                                         'road': 'Somewhere',
                                          'price_paid': '987654321'}
 
-        self.expected_private_data = {'proprietors': [
+        self.expected_authenticated_data = {'proprietors': [
                                          {'first_name': 'Gustavo', 'last_name': 'Fring'},
                                          {'first_name': '', 'last_name': ''}],
                                             'title_number': 'TN1234567',
@@ -40,48 +40,41 @@ class WorkersTestCase(unittest.TestCase):
                                             'payment': {'titles': ['1234'],
                                             'price_paid': '987654321'}}
 
-        self.public_feeds = ['http://public-titles-api/titles', 'http://search-api/load']
-        self.private_feeds = ['http://private-titles-api/titles']
+        self.public_feed = 'http://search-api/load/public_titles'
+        self.authenticated_feed= 'http://search-api/load/authenticated_titles'
+
+        self.headers = {"Content-Type": "application/json"}
 
 
     def test_extract_public_data_from_message(self):
-        public_data = extract_public(self.test_message)
+        public_data = public_filter(self.test_message)
         assert public_data == self.expected_public_data
 
-    def test_extract_private_data_from_message (self):
-        private_data = extract_private(self.test_message)
-        assert private_data == self.expected_private_data
+    def test_extract_data_that_needs_authentication_from_message (self):
+        private_data = authenticated_filter(self.test_message)
+        assert private_data == self.expected_authenticated_data
 
     @mock.patch("requests.put")
-    def test_worker_should_put_public_data_to_destinations(self, mock_put):
+    def test_worker_should_put_public_data_to_public_destination(self, mock_put):
 
-        title_url = '%s/%s' % (self.public_feeds[0],  self.expected_public_data['title_number'])
-        search_url = '%s/%s' % (self.public_feeds[1],  self.expected_public_data['title_number'])
-
-        headers = {"Content-Type": "application/json"}
-
-        worker = Worker(self.public_feeds, extract_public)
+        worker = Worker(self.public_feed, public_filter)
         worker.do_work(self.test_message)
 
-        calls = [call(title_url, data=json.dumps(self.expected_public_data), headers=headers),
-                 call(search_url, data=json.dumps(self.expected_public_data), headers=headers)]
+        mock_put.assert_called_with(self.public_feed, data=json.dumps(self.expected_public_data), headers=self.headers)
 
-        mock_put.assert_has_calls(calls, any_order=True)
 
     @mock.patch("requests.put")
-    def test_worker_should_put_private_data_to_destinations(self, mock_put):
+    def test_worker_should_put_authenticated_data_to_authenicated_destination(self, mock_put):
 
-        private_title_url = '%s/%s' % (self.private_feeds[0],  self.expected_private_data['title_number'])
-
-        headers = {"Content-Type": "application/json"}
-
-        worker = Worker(self.private_feeds, extract_private)
+        worker = Worker(self.authenticated_feed, authenticated_filter)
         worker.do_work(self.test_message)
 
-        mock_put.assert_called_with(private_title_url, data=json.dumps(self.expected_private_data), headers=headers)
+        mock_put.assert_called_with(self.authenticated_feed, data=json.dumps(self.expected_authenticated_data), headers=self.headers)
+
 
     @mock.patch("redis.Redis.blpop")
     def test_consumer_should_pull_data_from_queue(self, mock_blpop):
+
         consumer = ConsumerThread(queue, queue_key, [])
         consumer.get_next_message()
 
