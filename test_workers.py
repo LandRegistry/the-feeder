@@ -40,8 +40,8 @@ class WorkersTestCase(unittest.TestCase):
                                             'payment': {'titles': ['1234'],
                                             'price_paid': '987654321'}}
 
-        self.public_feeds = ['http://public-titles-api/title', 'http://search-api/load']
-        self.private_feeds = ['http://private-titles-api/title']
+        self.public_feeds = ['http://public-titles-api/titles', 'http://search-api/load']
+        self.private_feeds = ['http://private-titles-api/titles']
 
 
     def test_extract_public_data_from_message(self):
