@@ -7,7 +7,7 @@ url = urlparse.urlparse(os.environ.get('REDIS_HOST'))
 queue_key = os.environ.get('REDIS_QUEUE_KEY')
 public_api = os.environ.get('PUBLIC_TITLES_API')
 private_api  = os.environ.get('PRIVATE_TITLES_API')
-search_api = os.environ.get('SEARCH_API_URL')
+search_api = os.environ.get('SEARCH_API')
 
 #TODO when config cleaned and package created can move this to init?
 queue = Redis(host=url.hostname, port=url.port, password=url.password)
@@ -56,8 +56,11 @@ class Worker(object):
     def send(self, feed_url, data):
         headers = {"Content-Type": "application/json"}
         full_url = "%s/%s" % (feed_url, data['title_number'])
-        r = requests.put(full_url,  data=json.dumps(data), headers=headers)
-        logger.info("PUT data %s to URL %s : status code %s'" %  (data, full_url, r.status_code))
+        try:
+            r = requests.put(full_url,  data=json.dumps(data), headers=headers)
+            logger.info("PUT data %s to URL %s : status code %s'" %  (data, full_url, r.status_code))
+        except requests.exceptions.RequestException as e:
+            logger.error("Error sending %s to %s: Error %s" % (data, full_url, e))
 
 
 class ConsumerThread(threading.Thread):
