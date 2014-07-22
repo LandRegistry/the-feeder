@@ -1,5 +1,5 @@
 from redis import Redis
-import os, urlparse, json, logging, threading
+import os, sys,  time, urlparse, json, logging
 import requests
 
 #TODO move config out. This is a mess make this into proper package with config and test config
@@ -50,27 +50,30 @@ class Worker(object):
         self.filter = filter
 
     def do_work(self, message):
-        data = self.filter(message)
-        logger.info("Filtered data %s from message %s" % (data, message))
         try:
+            data = self.filter(message)
+            logger.info("Filtered data %s from message %s" % (data, message))
             self.send(data)
-        except RuntimeError as e:
-            logger.error("Encountered error %s'" % e)
+        except:
+            e = sys.exc_info()[0]
+            logger.error("Error extracting data from %s : Error %s" % (message, e))
 
     def send(self, data):
         headers = {"Content-Type": "application/json"}
         try:
-            response = requests.put(self.feed_url,  data=json.dumps(data), headers=headers)
+            payload = json.dumps(data)
+            response = requests.put(self.feed_url,  data=payload, headers=headers)
             logger.info("PUT data %s to URL %s : status code %s'" %  (data, self.feed_url, response.status_code))
         except requests.exceptions.RequestException as e:
             logger.error("Error sending %s to %s: Error %s" % (data, self.feed_url, e))
-            raise RuntimeError
+        except:
+            e = sys.exc_info()[0]
+            logger.error("Error extracting data from %s : Error %s" % (data, e))
 
 
-class ConsumerThread(threading.Thread):
+class Consumer(object):
 
     def __init__(self, queue, queue_key, workers):
-        threading.Thread.__init__(self)
         self.queue = queue
         self.queue_key = queue_key
         self.workers = workers
@@ -81,8 +84,8 @@ class ConsumerThread(threading.Thread):
             message = self.get_next_message()
             logger.info("Public titles worker received data %s from  %s'" %  (message, self.queue))
             for worker in workers:
-                thread = threading.Thread(target=worker.do_work, args=(message,))
-                thread.start()
+                worker.do_work(message)
+                time.sleep(2)
 
     def get_next_message(self):
         return self.queue.blpop(self.queue_key)
@@ -94,6 +97,6 @@ if __name__ == '__main__':
     workers.append(Worker(public_search_api, public_filter))
     workers.append(Worker(authenticated_search_api, authenticated_filter))
 
-    public_titles_thread = ConsumerThread(queue, queue_key, workers)
-    public_titles_thread.start()
+    consumer = Consumer(queue, queue_key, workers)
+    consumer.run()
 

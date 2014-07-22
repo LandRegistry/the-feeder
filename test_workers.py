@@ -2,7 +2,7 @@ import mock
 import json
 import unittest
 
-from worker import ConsumerThread, Worker, queue, queue_key, authenticated_filter, public_filter
+from worker import Consumer, Worker, queue, queue_key, authenticated_filter, public_filter
 
 class WorkersTestCase(unittest.TestCase):
 
@@ -73,7 +73,7 @@ class WorkersTestCase(unittest.TestCase):
     @mock.patch("redis.Redis.blpop")
     def test_consumer_should_pull_data_from_queue(self, mock_blpop):
 
-        consumer = ConsumerThread(queue, queue_key, [])
+        consumer = Consumer(queue, queue_key, [])
         consumer.get_next_message()
 
         mock_blpop.assert_called_with(queue_key)
