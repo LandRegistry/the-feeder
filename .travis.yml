@@ -5,5 +5,12 @@ install:
 - pip install -r requirements.txt
 - pip install -r requirements_test.txt
 env:
- - REDIS_HOST='redis://user:@localhost:6379'
+- REDIS_HOST='redis://user:@localhost:6379'
 script: py.test
+deploy:
+  provider: heroku
+  api_key:
+    secure: KyQv94T0FBlYgSf5iEQett6POlGek2846w/bi0cNQVj/DTWxdvlghbsWpAPX5tQz1nrmmfGR7z+H8FoT0m6lcrWgJkx3KPAbLt9lmGQbjxC6bsaSxBaGRtHOGuEepa/f98USFAoHb6t4I4lUJU3ZGlSHvn9+C5lumncPp/ud8HA=
+  app: lr-feeder-app
+  on:
+    repo: LandRegistry/the-feeder
