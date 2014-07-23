@@ -2,7 +2,12 @@ import mock
 import json
 import unittest
 
-from worker import Consumer, Worker, queue, queue_key, authenticated_filter, public_filter
+from thefeeder.worker import Consumer
+from thefeeder.worker import Worker
+from thefeeder.worker import queue
+from thefeeder.worker import queue_key
+from thefeeder.worker import authenticated_filter
+from thefeeder.worker import public_filter
 
 class WorkersTestCase(unittest.TestCase):
 

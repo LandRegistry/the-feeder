@@ -1,1 +1,1 @@
-worker: python -u worker.py
+worker: python -u -m thefeeder.worker

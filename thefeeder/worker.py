@@ -1,31 +1,21 @@
-from redis import Redis
-import os, sys,  time, urlparse, json, logging
+import sys
+import time
+import json
 import requests
 
-#TODO move config out. This is a mess make this into proper package with config and test config
-url = urlparse.urlparse(os.environ.get('REDIS_HOST'))
-queue_key = os.environ.get('REDIS_QUEUE_KEY')
-
-#public_api = os.environ.get('PUBLIC_TITLES_API') I think this is on the way out
-
-public_search_api = os.environ.get('PUBLIC_SEARCH_API')
-authenticated_search_api = os.environ.get('AUTHENTICATED_SEARCH_API')
-# Assumption is that Elastic search for these two are on different domains
-
-#TODO when config cleaned and package created can move this to init?
-queue = Redis(host=url.hostname, port=url.port, password=url.password)
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger()
-logger.addHandler(logging.StreamHandler())
+from . import logger
+from . import queue
+from . import queue_key
+from . import public_search_api
+from . import authenticated_search_api
 
 def  authenticated_filter(message):
         payload = message[1].replace('\'', '\"')
         json_data = json.loads(payload)
         return json_data
 
-#TODO change this to excluded explicitly rather
-# than include
+#TODO change this to exclude things explicitly rather
+# than include?
 def public_filter(message):
     payload = message[1].replace('\'', '\"')
     json_data = json.loads(payload)
@@ -80,9 +70,9 @@ class Consumer(object):
 
     def run(self):
         while True:
-            logger.info("Public titles worker awaiting data from  %s'" %  self.queue)
+            logger.info("Public titles worker awaiting data from  %s" %  self.queue)
             message = self.get_next_message()
-            logger.info("Public titles worker received data %s from  %s'" %  (message, self.queue))
+            logger.info("Public titles worker received data %s from  %s" %  (message, self.queue))
             for worker in workers:
                 worker.do_work(message)
                 time.sleep(2)

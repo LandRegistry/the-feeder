@@ -6,7 +6,9 @@ install:
 - pip install -r requirements_test.txt
 env:
 - REDIS_HOST='redis://user:@localhost:6379'
-script: py.test
+script: py.test --cov thefeeder tests/ --cov-report=term --cov-report=html
+after_success:
+  - coveralls
 deploy:
   provider: heroku
   api_key:
