@@ -19,8 +19,9 @@ redis_url = os.environ.get('REDIS_URL')
 queue_key = os.environ.get('REDIS_QUEUE_KEY')
 public_search_api = os.environ.get('PUBLIC_SEARCH_API')
 authenticated_search_api = os.environ.get('AUTHENTICATED_SEARCH_API')
+queue = None
 
-if config_name.upper() == 'config.Config':
+if config_name.upper() == 'PRODUCTION':
     while True:
         try:
             url = urlparse.urlparse(redis_url)
