@@ -27,6 +27,7 @@ if config_name.upper() == 'PRODUCTION':
             url = urlparse.urlparse(redis_url)
             logger.info("Try to connect to Redis on %s %s" % (url.hostname, url.port))
             queue = Redis(host=url.hostname, port=url.port, password=url.password)
+            break
         except RuntimeError as e:
             logger.error("Failed to connect to Redis %e" % e)
 
