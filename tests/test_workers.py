@@ -1,6 +1,8 @@
 import mock
 import json
 import unittest
+import cPickle as pickle
+import collections
 
 from thefeeder.worker import Consumer
 from thefeeder.worker import Worker
@@ -11,37 +13,17 @@ from thefeeder.worker import public_filter
 
 class WorkersTestCase(unittest.TestCase):
 
+
     def setUp(self):
-        self.test_message = ('titles_queue',
-                '''{'proprietors': [
-                        {'first_name': 'Gustavo', 'last_name': 'Fring'}, {'first_name': '', 'last_name': ''}],
-                'title_number': 'TN1234567',
-                'property': {'address':
-                                {'house_number': '1', 'town': 'Albuquerque', 'postcode': '98765', 'road': 'Somewhere'},
-                'class_of_title': 'qualified',
-                'tenure': 'freehold'},
-                'payment': {'titles': ['1234'],
-                'price_paid': '987654321'}}''')
+        with open('tests/original.json') as data_file:    
+            dictionary = json.load(data_file, object_pairs_hook=collections.OrderedDict)
+            # the authenticated data would be unadulterated original data
+            self.expected_authenticated_data = dictionary
+            pickled = pickle.dumps(dictionary)
+            self.test_message = ('titles_queue', pickled)
 
-
-        self.expected_public_data = {'title_number': 'TN1234567',
-                                        'house_number': '1',
-                                        'town': 'Albuquerque',
-                                        'postcode': '98765',
-                                        'road': 'Somewhere',
-                                         'price_paid': '987654321'}
-
-        self.expected_authenticated_data = {'proprietors': [
-                                         {'first_name': 'Gustavo', 'last_name': 'Fring'},
-                                         {'first_name': '', 'last_name': ''}],
-                                            'title_number': 'TN1234567',
-                                            'property':
-                                               {'address':
-                                                {'house_number': '1', 'town': 'Albuquerque', 'postcode': '98765', 'road':'Somewhere'},
-                                            'class_of_title': 'qualified',
-                                            'tenure': 'freehold'},
-                                            'payment': {'titles': ['1234'],
-                                            'price_paid': '987654321'}}
+        with open('tests/public.json') as data_file:
+            self.expected_public_data = json.load(data_file, object_pairs_hook=collections.OrderedDict) 
 
         self.public_feed = 'http://search-api/load/public_titles'
         self.authenticated_feed= 'http://search-api/load/authenticated_titles'

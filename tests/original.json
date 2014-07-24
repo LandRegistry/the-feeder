@@ -1,0 +1,27 @@
+{
+  "proprietors": [
+    {
+      "first_name": "Gustavo",
+      "last_name": "Fring"
+    },
+    {
+      "first_name": "",
+      "last_name": ""
+    }
+  ],
+  "title_number": "TN1234567",
+  "property": {
+    "address": {
+      "house_number": "1",
+      "town": "Albuquerque",
+      "postcode": "98765",
+      "road": "Somewhere"
+    },
+    "class_of_title": "qualified",
+    "tenure": "freehold"
+  },
+  "payment": {
+    "titles": ["1234"],
+    "price_paid": "987654321"
+  }
+}
