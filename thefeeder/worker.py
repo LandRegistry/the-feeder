@@ -2,6 +2,7 @@ import sys
 import time
 import json
 import requests
+import cPickle as pickle
 
 from . import logger
 from . import queue
@@ -9,29 +10,15 @@ from . import queue_key
 from . import public_search_api
 from . import authenticated_search_api
 
-def  authenticated_filter(message):
-        payload = message[1].replace('\'', '\"')
-        json_data = json.loads(payload)
-        return json_data
+def authenticated_filter(message):
+    # presumably return the data "as-is"
+    return pickle.loads(message[1])
 
-#TODO change this to exclude things explicitly rather
-# than include?
+# Removing sensitive data
 def public_filter(message):
-    payload = message[1].replace('\'', '\"')
-    json_data = json.loads(payload)
-    title_number = json_data.get('title_number')
-    property_details = json_data.get('property')
-    address = property_details.get('address')
-    payment = json_data.get('payment')
-
-    public_title = {"title_number": title_number,
-          "house_number" : address.get('house_number'),
-          "road" : address.get('road'),
-          "town" : address.get('town'),
-          "postcode" : address.get('postcode'),
-          "price_paid": payment.get('price_paid')
-    }
-    return public_title
+    depickled = pickle.loads(message[1])
+    depickled.pop('proprietors', None)
+    return depickled
 
 class Worker(object):
 
@@ -89,4 +76,3 @@ if __name__ == '__main__':
 
     consumer = Consumer(queue, queue_key, workers)
     consumer.run()
-
