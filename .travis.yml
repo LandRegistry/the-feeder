@@ -4,6 +4,7 @@ python:
 install:
 - pip install -r requirements.txt
 - pip install -r requirements_test.txt
+- pip install python-coveralls
 env:
 - SETTINGS='TEST'
 script: py.test --cov thefeeder tests/ --cov-report=term --cov-report=html
