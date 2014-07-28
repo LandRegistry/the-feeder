@@ -2,6 +2,8 @@ The Feeder
 ======
 [![Build Status](https://travis-ci.org/LandRegistry/the-feeder.svg)](https://travis-ci.org/LandRegistry/the-feeder)
 
+[![Coverage Status](https://img.shields.io/coveralls/LandRegistry/the-feeder.svg)](https://coveralls.io/r/LandRegistry/the-feeder)
+
 Worker process to consume title json from queue.
 
 ####Dependencies
