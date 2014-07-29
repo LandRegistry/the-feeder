@@ -31,8 +31,7 @@ class Worker(object):
             data = self.filter(message)
             logger.info("Filtered data %s from message %s" % (data, message))
             self.send(data)
-        except:
-            e = sys.exc_info()[0]
+        except pickle.UnpicklingError as e:
             logger.error("Error extracting data from %s : Error %s" % (message, e))
 
     def send(self, data):
@@ -60,12 +59,15 @@ class Consumer(object):
             logger.info("Public titles worker awaiting data from  %s" %  self.queue)
             message = self.get_next_message()
             logger.info("Public titles worker received data %s from  %s" %  (message, self.queue))
-            for worker in workers:
-                worker.do_work(message)
-                time.sleep(2)
+            self.send_to_workers(message)
 
     def get_next_message(self):
         return self.queue.blpop(self.queue_key)
+
+    def send_to_workers(self, message):
+        for worker in self.workers:
+            worker.do_work(message)
+
 
 
 if __name__ == '__main__':
