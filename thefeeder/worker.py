@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 import json
@@ -9,6 +10,7 @@ from . import queue
 from . import queue_key
 from . import public_search_api
 from . import authenticated_search_api
+from raven.base import Client
 
 def authenticated_filter(message):
     # presumably return the data "as-is"
@@ -55,11 +57,20 @@ class Consumer(object):
         self.workers = workers
 
     def run(self):
+        in_heroku = 'SENTRY_DSN' in os.environ
+        if in_heroku:
+          client = Client(dsn=os.environ['SENTRY_DSN'])
         while True:
+          try:
             logger.info("Public titles worker awaiting data from  %s" %  self.queue)
             message = self.get_next_message()
             logger.info("Public titles worker received data %s from  %s" %  (message, self.queue))
             self.send_to_workers(message)
+          except Exception:
+            if in_heroku:
+              client.captureException()
+            raise
+
 
     def get_next_message(self):
         return self.queue.blpop(self.queue_key)
