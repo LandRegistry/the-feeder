@@ -10,17 +10,28 @@ from . import queue
 from . import queue_key
 from . import public_search_api
 from . import authenticated_search_api
+from . import geo_api
 from raven.base import Client
 
 def authenticated_filter(message):
     # presumably return the data "as-is"
     return pickle.loads(message[1])
 
-# Removing sensitive data
 def public_filter(message):
+    """Removing sensitive data"""
+
     depickled = pickle.loads(message[1])
     depickled.pop('proprietors', None)
     return depickled
+
+def geo_filter(message):
+
+    result = {}
+    depickled = pickle.loads(message[1])
+    result['title_number'] = depickled['title_number']
+    result['extent'] = depickled['extent']
+
+    return result
 
 class Worker(object):
 
@@ -40,6 +51,11 @@ class Worker(object):
         headers = {"Content-Type": "application/json"}
         try:
             payload = json.dumps(data)
+
+            #todo: all apis should accept put at /titles
+            if '<title_number>' in self.feed_url:
+                self.feed_url = self.feed_url.replace('<title_number>', payload['title_number'])
+
             response = requests.put(self.feed_url,  data=payload, headers=headers)
             logger.info("PUT data %s to URL %s : status code %s'" %  (data, self.feed_url, response.status_code))
         except requests.exceptions.RequestException as e:
@@ -47,7 +63,6 @@ class Worker(object):
         except:
             e = sys.exc_info()[0]
             logger.error("Error extracting data from %s : Error %s" % (data, e))
-
 
 class Consumer(object):
 
@@ -59,18 +74,17 @@ class Consumer(object):
     def run(self):
         in_heroku = 'SENTRY_DSN' in os.environ
         if in_heroku:
-          client = Client(dsn=os.environ['SENTRY_DSN'])
+            client = Client(dsn=os.environ['SENTRY_DSN'])
         while True:
-          try:
-            logger.info("Public titles worker awaiting data from  %s" %  self.queue)
-            message = self.get_next_message()
-            logger.info("Public titles worker received data %s from  %s" %  (message, self.queue))
-            self.send_to_workers(message)
-          except Exception:
-            if in_heroku:
-              client.captureException()
-            raise
-
+            try:
+                logger.info("Worker awaiting data from  %s" %  self.queue)
+                message = self.get_next_message()
+                logger.info("Worker received data %s from  %s" %  (message, self.queue))
+                self.send_to_workers(message)
+            except Exception:
+                if in_heroku:
+                    client.captureException()
+                raise
 
     def get_next_message(self):
         return self.queue.blpop(self.queue_key)
@@ -80,12 +94,12 @@ class Consumer(object):
             worker.do_work(message)
 
 
-
 if __name__ == '__main__':
 
     workers = []
     workers.append(Worker(public_search_api, public_filter))
     workers.append(Worker(authenticated_search_api, authenticated_filter))
+    workers.append(Worker(geo_api, geo_filter))    
 
     consumer = Consumer(queue, queue_key, workers)
     consumer.run()
