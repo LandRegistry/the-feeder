@@ -54,7 +54,7 @@ class Worker(object):
 
             #todo: all apis should accept put at /titles
             if '<title_number>' in self.feed_url:
-                self.feed_url = self.feed_url.replace('<title_number>', payload['title_number'])
+                self.feed_url = self.feed_url.replace('<title_number>', data['title_number'])
 
             response = requests.put(self.feed_url,  data=payload, headers=headers)
             logger.info("PUT data %s to URL %s : status code %s'" %  (data, self.feed_url, response.status_code))
