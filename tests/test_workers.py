@@ -6,7 +6,6 @@ import collections
 import requests
 import exceptions
 
-
 from thefeeder.worker import Consumer
 from thefeeder.worker import Worker
 from thefeeder.worker import queue
