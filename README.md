@@ -33,6 +33,8 @@ REDIS_QUEUE_KEY
 REDIS_URL
 PUBLIC_SEARCH_API_URL
 PUBLIC_SEARCH_API_ENDPOINT
+GEO_API_URL
+GEO_API_ENDPOINT
 AUTHENTICATED_SEARCH_API_URL
 AUTHENTICATED_SEARCH_API_ENDPOINT
 ```
@@ -47,6 +49,8 @@ export PUBLIC_SEARCH_API_URL='http://localhost:8003'
 export PUBLIC_SEARCH_API_ENDPOINT='/load/public_titles'
 export AUTHENTICATED_SEARCH_API_URL='http://localhost:8003'
 export AUTHENTICATED_SEARCH_API_ENDPOINT='/load/authenticated_titles'
+export GEO_API_URL='http://localhost:8003'
+export GEO_API_ENDPOINT='/titles'
 export REDIS_QUEUE_KEY='titles_queue'
 export REDIS_HOST='redis://user:@localhost:6379'
 ```

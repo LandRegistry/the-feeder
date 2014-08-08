@@ -19,6 +19,7 @@ redis_url = os.environ.get('REDIS_URL')
 queue_key = os.environ.get('REDIS_QUEUE_KEY')
 public_search_api = os.environ.get('PUBLIC_SEARCH_API_URL', '') + os.environ.get('PUBLIC_SEARCH_API_ENDPOINT', '')
 authenticated_search_api = os.environ.get('AUTHENTICATED_SEARCH_API_URL', '') + os.environ.get('AUTHENTICATED_SEARCH_API_ENDPOINT', '')
+geo_api = os.environ.get('GEO_API_URL', '') + os.environ.get('GEO_API_ENDPOINT', '')
 queue = None
 
 if config_name.upper() == 'PRODUCTION':
