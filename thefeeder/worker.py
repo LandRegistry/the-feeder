@@ -22,6 +22,7 @@ def public_filter(message):
 
     depickled = pickle.loads(message[1])
     depickled.pop('proprietors', None)
+    depickled.pop('charges', None)
     return depickled
 
 def geo_filter(message):
