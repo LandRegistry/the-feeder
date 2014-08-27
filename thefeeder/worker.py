@@ -100,7 +100,7 @@ if __name__ == '__main__':
     workers = []
     workers.append(Worker(public_search_api, public_filter))
     workers.append(Worker(authenticated_search_api, authenticated_filter))
-    workers.append(Worker(geo_api, geo_filter))    
+    # workers.append(Worker(geo_api, geo_filter))
 
     consumer = Consumer(queue, queue_key, workers)
     consumer.run()
