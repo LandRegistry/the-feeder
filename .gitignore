@@ -9,6 +9,7 @@ __pycache__/
 .env
 
 dev/
+*.iml
 
  Distribution / packaging
 .Python
