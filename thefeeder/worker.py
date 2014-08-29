@@ -30,7 +30,6 @@ def public_filter(message):
 
     depickled.pop('proprietors', None)
     depickled.pop('charges', None)
-    print depickled
     return depickled
 
 def geo_filter(message):
