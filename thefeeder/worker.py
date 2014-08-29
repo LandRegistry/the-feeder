@@ -1,6 +1,5 @@
 import os
 import sys
-import time
 import json
 import requests
 import cPickle as pickle
@@ -10,7 +9,6 @@ from . import queue
 from . import queue_key
 from . import public_search_api
 from . import authenticated_search_api
-from . import geo_api
 from raven.base import Client
 
 def authenticated_filter(message):
@@ -21,8 +19,18 @@ def public_filter(message):
     """Removing sensitive data"""
 
     depickled = pickle.loads(message[1])
+    leases = depickled.get('leases')
+    if leases:
+        for lease in leases:
+            lessee_name = lease['lessee_name']
+            proprietors = depickled.get('proprietors')
+            for p in proprietors:
+                if lessee_name == p.get('full_name'):
+                    lease.pop('lessee_name')
+
     depickled.pop('proprietors', None)
     depickled.pop('charges', None)
+    print depickled
     return depickled
 
 def geo_filter(message):

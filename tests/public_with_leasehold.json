@@ -1,0 +1,28 @@
+{
+  "title_number": "TN12345678",
+  "property": {
+    "address": {
+      "house_number": "1",
+      "town": "Albuquerque",
+      "postcode": "98765",
+      "road": "Somewhere"
+    },
+    "class_of_title": "qualified",
+    "tenure": "leasehold"
+  },
+  "payment": {
+    "titles": ["1234"],
+    "price_paid": "987654321"
+  },
+  "leases": [
+          {
+              "lease_term": "10",
+              "lease_easements": "True",
+              "lessor_name": "Jane Doe",
+              "lease_date": "2013-01-01",
+              "alienation_clause": "True",
+              "title_registered": "True",
+              "lease_from": "2013-01-01"
+          }
+    ]
+}
