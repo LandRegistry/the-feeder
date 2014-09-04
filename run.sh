@@ -1,3 +1,3 @@
-source ./environment.sh
+#!/bin/bash
 
-foreman start
+APP_ROOT=`pwd` bash ./run_dev.sh
