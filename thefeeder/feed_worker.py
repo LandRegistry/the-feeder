@@ -6,7 +6,7 @@ import cPickle as pickle
 from thefeeder import logger
 
 
-class Worker(object):
+class FeedWorker(object):
     def __init__(self, feed_url, filter):
         self.feed_url = feed_url
         self.filter = filter

@@ -4,7 +4,7 @@ from raven.base import Client
 from thefeeder import logger
 
 
-class Consumer(object):
+class FeedConsumer(object):
     def __init__(self, queue, queue_key, workers):
         self.queue = queue
         self.queue_key = queue_key
