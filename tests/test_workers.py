@@ -5,8 +5,10 @@ import cPickle as pickle
 import collections
 import requests
 import exceptions
-
-from thefeeder.worker import Consumer, Worker, redis_queue, queue_key, authenticated_filter, public_filter
+from thefeeder import redis_queue, queue_key
+from thefeeder.feed_consumer import Consumer
+from thefeeder.feed_worker import Worker
+from thefeeder.filters import public_filter, authenticated_filter
 
 
 class WorkersTestCase(unittest.TestCase):
@@ -58,7 +60,7 @@ class WorkersTestCase(unittest.TestCase):
         consumer.get_next_message()
         mock_blpop.assert_called_with(queue_key)
 
-    @mock.patch("thefeeder.worker.Worker.do_work")
+    @mock.patch("thefeeder.feed_worker.Worker.do_work")
     def test_consumer_should_send_work_to_all_workers(self, mock_do_work):
         worker_1 = Worker(self.public_feed, public_filter)
         worker_2 = Worker(self.public_feed, public_filter)
