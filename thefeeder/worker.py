@@ -3,17 +3,15 @@ import sys
 import json
 import requests
 import cPickle as pickle
-
-from . import logger
-from . import queue
-from . import queue_key
-from . import public_search_api
-from . import authenticated_search_api
 from raven.base import Client
+
+from . import logger, redis_queue, queue_key, public_search_api, authenticated_search_api
+
 
 def authenticated_filter(message):
     # presumably return the data "as-is"
     return pickle.loads(message[1])
+
 
 def public_filter(message):
     """Removing sensitive data"""
@@ -32,8 +30,8 @@ def public_filter(message):
     depickled.pop('charges', None)
     return depickled
 
-def geo_filter(message):
 
+def geo_filter(message):
     result = {}
     depickled = pickle.loads(message[1])
     result['title_number'] = depickled['title_number']
@@ -41,8 +39,8 @@ def geo_filter(message):
 
     return result
 
-class Worker(object):
 
+class Worker(object):
     def __init__(self, feed_url, filter):
         self.feed_url = feed_url
         self.filter = filter
@@ -60,20 +58,20 @@ class Worker(object):
         try:
             payload = json.dumps(data)
 
-            #todo: all apis should accept put at /titles
+            # todo: all apis should accept put at /titles
             if '<title_number>' in self.feed_url:
                 self.feed_url = self.feed_url.replace('<title_number>', data['title_number'])
 
-            response = requests.put(self.feed_url,  data=payload, headers=headers)
-            logger.info("PUT data %s to URL %s : status code %s'" %  (data, self.feed_url, response.status_code))
+            response = requests.put(self.feed_url, data=payload, headers=headers)
+            logger.info("PUT data %s to URL %s : status code %s'" % (data, self.feed_url, response.status_code))
         except requests.exceptions.RequestException as e:
             logger.error("Error sending %s to %s: Error %s" % (data, self.feed_url, e))
         except:
             e = sys.exc_info()[0]
             logger.error("Error extracting data from %s : Error %s" % (data, e))
 
-class Consumer(object):
 
+class Consumer(object):
     def __init__(self, queue, queue_key, workers):
         self.queue = queue
         self.queue_key = queue_key
@@ -85,9 +83,9 @@ class Consumer(object):
             client = Client(dsn=os.environ['SENTRY_DSN'])
         while True:
             try:
-                logger.info("Worker awaiting data from  %s" %  self.queue)
+                logger.info("Worker awaiting data from  %s" % self.queue)
                 message = self.get_next_message()
-                logger.info("Worker received data %s from  %s" %  (message, self.queue))
+                logger.info("Worker received data %s from  %s" % (message, self.queue))
                 self.send_to_workers(message)
             except Exception:
                 if in_heroku:
@@ -103,11 +101,11 @@ class Consumer(object):
 
 
 if __name__ == '__main__':
-
-    workers = []
-    workers.append(Worker(public_search_api, public_filter))
-    workers.append(Worker(authenticated_search_api, authenticated_filter))
-    # workers.append(Worker(geo_api, geo_filter))
-
-    consumer = Consumer(queue, queue_key, workers)
-    consumer.run()
+    Consumer(
+        queue=redis_queue,
+        queue_key=queue_key,
+        workers=[
+            Worker(feed_url=public_search_api, filter=public_filter),
+            Worker(feed_url=authenticated_search_api, filter=authenticated_filter),
+        ]
+    ).run()

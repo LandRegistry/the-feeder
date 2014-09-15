@@ -20,14 +20,14 @@ queue_key = os.environ.get('REDIS_QUEUE_KEY')
 public_search_api = os.environ.get('PUBLIC_SEARCH_API_URL', '') + os.environ.get('PUBLIC_SEARCH_API_ENDPOINT', '')
 authenticated_search_api = os.environ.get('AUTHENTICATED_SEARCH_API_URL', '') + os.environ.get('AUTHENTICATED_SEARCH_API_ENDPOINT', '')
 geo_api = os.environ.get('GEO_API_URL', '') + os.environ.get('GEO_API_ENDPOINT', '')
-queue = None
+redis_queue = None
 
 if config_name.upper() == 'PRODUCTION':
     while True:
         try:
             url = urlparse.urlparse(redis_url)
             logger.info("Try to connect to Redis on %s %s" % (url.hostname, url.port))
-            queue = Redis(host=url.hostname, port=url.port, password=url.password)
+            redis_queue = Redis(host=url.hostname, port=url.port, password=url.password)
             break
         except RuntimeError as e:
             logger.error("Failed to connect to Redis %e" % e)
@@ -35,4 +35,4 @@ if config_name.upper() == 'PRODUCTION':
         time.sleep(10)
 
 else:
-    queue = Redis(redis_url)
+    redis_queue = Redis(redis_url)
