@@ -5,8 +5,10 @@ import cPickle as pickle
 import collections
 import requests
 import exceptions
-
-from thefeeder.worker import Consumer, Worker, redis_queue, queue_key, authenticated_filter, public_filter
+from thefeeder import redis_queue, queue_key
+from thefeeder.feed_consumer import FeedConsumer
+from thefeeder.feed_worker import FeedWorker
+from thefeeder.filters import public_filter, authenticated_filter
 
 
 class WorkersTestCase(unittest.TestCase):
@@ -39,14 +41,14 @@ class WorkersTestCase(unittest.TestCase):
 
     @mock.patch("requests.put")
     def test_worker_should_put_public_data_to_public_destination(self, mock_put):
-        worker = Worker(self.public_feed, public_filter)
+        worker = FeedWorker(self.public_feed, public_filter)
         worker.do_work(self.test_message)
         mock_put.assert_called_with(self.public_feed, data=json.dumps(self.expected_public_data), headers=self.headers)
 
 
     @mock.patch("requests.put")
     def test_worker_should_put_authenticated_data_to_authenicated_destination(self, mock_put):
-        worker = Worker(self.authenticated_feed, authenticated_filter)
+        worker = FeedWorker(self.authenticated_feed, authenticated_filter)
         worker.do_work(self.test_message)
         mock_put.assert_called_with(self.authenticated_feed, data=json.dumps(self.expected_authenticated_data),
                                     headers=self.headers)
@@ -54,15 +56,15 @@ class WorkersTestCase(unittest.TestCase):
 
     @mock.patch("redis.Redis.blpop")
     def test_consumer_should_pull_data_from_queue(self, mock_blpop):
-        consumer = Consumer(redis_queue, queue_key, [])
+        consumer = FeedConsumer(redis_queue, queue_key, [])
         consumer.get_next_message()
         mock_blpop.assert_called_with(queue_key)
 
-    @mock.patch("thefeeder.worker.Worker.do_work")
+    @mock.patch("thefeeder.feed_worker.FeedWorker.do_work")
     def test_consumer_should_send_work_to_all_workers(self, mock_do_work):
-        worker_1 = Worker(self.public_feed, public_filter)
-        worker_2 = Worker(self.public_feed, public_filter)
-        consumer = Consumer(redis_queue, queue_key, [worker_1, worker_2])
+        worker_1 = FeedWorker(self.public_feed, public_filter)
+        worker_2 = FeedWorker(self.public_feed, public_filter)
+        consumer = FeedConsumer(redis_queue, queue_key, [worker_1, worker_2])
         consumer.send_to_workers(self.test_message)
         mock_do_work.assert_called_twice_with(self.test_message)
 
@@ -70,7 +72,7 @@ class WorkersTestCase(unittest.TestCase):
     @mock.patch("requests.put", side_effect=requests.exceptions.RequestException)
     @mock.patch("thefeeder.logger.error")
     def test_dowork_catches_requests_exception(self, mock_log_error, mock_put):
-        worker = Worker(self.public_feed, public_filter)
+        worker = FeedWorker(self.public_feed, public_filter)
         worker.do_work(self.test_message)
         mock_log_error.assert_called_with(mock.ANY)
 
@@ -78,7 +80,7 @@ class WorkersTestCase(unittest.TestCase):
     @mock.patch("requests.put", side_effect=exceptions.Exception)
     @mock.patch("thefeeder.logger.error")
     def test_dowork_catches_and_logs_any_exception(self, mock_log_error, mock_put):
-        worker = Worker(self.public_feed, public_filter)
+        worker = FeedWorker(self.public_feed, public_filter)
         worker.do_work(self.test_message)
         mock_log_error.assert_called_with(mock.ANY)
 
@@ -86,7 +88,7 @@ class WorkersTestCase(unittest.TestCase):
     @mock.patch("cPickle.loads", side_effect=pickle.UnpicklingError)
     @mock.patch("thefeeder.logger.error")
     def test_dowork_catches_and_logs_unpickling_error(self, mock_filter, mock_log_error):
-        worker = Worker(self.public_feed, public_filter)
+        worker = FeedWorker(self.public_feed, public_filter)
         worker.do_work(self.test_message)
         mock_log_error.assert_called_with(mock.ANY)
 
