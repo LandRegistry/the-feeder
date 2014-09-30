@@ -1,5 +1,7 @@
 import cPickle as pickle
 
+from thefeeder import logger, public_message_validator
+
 
 def authenticated_filter(message):
     # presumably return the data "as-is"
@@ -7,21 +9,12 @@ def authenticated_filter(message):
 
 
 def public_filter(message):
-    """Removing sensitive data"""
-
-    depickled = pickle.loads(message[1])
-    leases = depickled.get('leases')
-    if leases:
-        for lease in leases:
-            lessee_name = lease['lessee_name']
-            proprietors = depickled.get('proprietors')
-            for p in proprietors:
-                if lessee_name == p.get('full_name'):
-                    lease.pop('lessee_name')
-
-    depickled.pop('proprietors', None)
-    depickled.pop('charges', None)
-    return depickled
+    """ Add only the data that is available to the public """
+    try:
+        depickled = pickle.loads(message[1])
+        return public_message_validator.to_canonical_form(depickled)
+    except Exception as e:
+        logger.error("There was an exception when filtering the data. Error: %s" % e)
 
 
 def geo_filter(message):
