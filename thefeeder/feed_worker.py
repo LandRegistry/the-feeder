@@ -29,7 +29,7 @@ class FeedWorker(object):
                 self.feed_url = self.feed_url.replace('<title_number>', data['title_number'])
 
             response = requests.put(self.feed_url, data=payload, headers=headers)
-            logger.info("PUT data %s to URL %s : status code %s'" % (data, self.feed_url, response.status_code))
+            logger.info("PUT data %s as type: %s to URL %s : status code %s'" % (data, type(data), self.feed_url, response.status_code))
         except requests.exceptions.RequestException as e:
             logger.error("Error sending %s to %s: Error %s" % (data, self.feed_url, e))
         except:
