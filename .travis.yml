@@ -7,15 +7,15 @@ install:
 - pip install python-coveralls
 env:
 - SETTINGS='config.TestConfig'
-script: 
+script:
 - source ./environment_test.sh
 - py.test --cov thefeeder tests/ --cov-report=term --cov-report=html
 after_success:
-  - coveralls
+- coveralls
 deploy:
   provider: heroku
   api_key:
-    secure: KyQv94T0FBlYgSf5iEQett6POlGek2846w/bi0cNQVj/DTWxdvlghbsWpAPX5tQz1nrmmfGR7z+H8FoT0m6lcrWgJkx3KPAbLt9lmGQbjxC6bsaSxBaGRtHOGuEepa/f98USFAoHb6t4I4lUJU3ZGlSHvn9+C5lumncPp/ud8HA=
-  app: lr-feeder-app
+    secure: m2dYxAqaYjRL8guNmIsoB8s1nbmh+OvzISD3G05PtqLE7sKDJCv6wNCsaBBX6swoDPBVeon/d/rQQynfq+/CKtSM+yG2WghZoDia2Gi6i5d9NCaxGW2DdqDi2litrM0zqXaXhInDHtQkuG0DY/mw8E2NbN9CBehcZbkOBrgMuww=
+  app: the-feeder
   on:
     repo: LandRegistry/the-feeder
