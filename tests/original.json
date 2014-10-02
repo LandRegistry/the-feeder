@@ -1,39 +1,79 @@
-{
-  "proprietors": [
     {
-      "full_name": "Gustavo Fring"
-    },
-    {
-      "full_name": ""
+            "title_number": "TEST_AB1234567",
+            "property": {
+                "address": {
+                  "house_number": "1",
+                  "town": "Albuquerque",
+                  "postcode": "98765",
+                  "road": "Somewhere"
+                },
+                "class_of_title": "qualified",
+                "tenure": "freehold"
+              },
+
+            "extent": {
+                "type": "Feature",
+                "crs": {
+                    "type":"name",
+                    "properties":{
+                        "name":"urn:ogc:def:crs:EPSG:27700"
+                    }
+                },
+                "geometry":{
+                    "type":"Polygon",
+                    "coordinates":[
+                        [[530857.01,181500.00],
+                        [530857.00,181500.00],
+                        [530857.00,181500.00],
+                        [530857.00,181500.00],
+                        [530857.01,181500.00]]
+                    ]
+                },
+                "properties":{
+                }
+            },
+
+            "proprietorship" :   {
+                                    "text" : "PROPRIETOR(S): *RP*",
+                                    "fields" : {"proprietors":[{"name" : {"title" : "Mr", "first_name" : "Michael", "surname" : "Jones", "decoration" : ""}, "address" : {"full_address": "8 Miller Way, Plymouth, Devon, PL6 8UQ", "house_no" : "8", "street_name" : "Miller Way", "town" : "Plymouth", "postal_county" : "Devon", "region_name" : "", "country" : ""}}]},
+                                    "deeds" : [],
+                                    "notes" : []
+                                 },
+            "property_description" : {
+                                        "text" : "The Freehold land shown edged with red on the plan of the above Title filed at the Registry and being *AD*",
+                                        "fields" : {"address" : {"full_address": "8 Miller Way, Plymouth, Devon, PL6 8UQ", "house_no" : "8", "street_name" : "Miller Way", "town" : "Plymouth", "postal_county" : "Devon", "region_name" : "", "country" : ""}},
+                                        "deeds" : [],
+                                        "notes" : []
+                                      },
+            "restrictive_covenants" : [{
+                              "text" : "By an Order of the Upper Tribunal (Lands Chamber) dated *DA* made pursuant to Section 84 of the Law of Property Act 1925 the restrictive covenants contained in the *DT**DE* dated *DD* referred to above were released. *N<¬NOTE: Copy Order filed>N*.",
+                              "fields" : {"date" : "14/06/2013", "extent" : ""},
+                              "deeds" : [{"type" : "Conveyance", "date" : "01.06.1996", "parties" : [{"title" : "Mr", "first_name" : "Michael", "surname" : "Jones", "decoration" : ""},{"title" : "Mr", "first_name" : "Jeff", "surname" : "Smith", "decoration" : ""}]}],
+                              "notes" : [{"text" : "Copy Order filed", "documents_referred" : "I"}]
+                            }],
+            "bankruptcy" : [{
+                              "text" : "BANKRUPTCY NOTICE entered under section 86(2) of the Land Registration Act 2002 in respect of a pending action, as the title of the proprietor of the registered estate appears to be affected by a petition in bankruptcy against *NM* presented in the *M<>M* Court (Court Reference Number *M<>M*) (Land Charges Reference Number PA*M<>M*).",
+                              "fields" : {"name" : "James Lock", "miscellaneous" : "Gloucester County", "miscellaneous" : "124578", "miscellaneous" : "102"},
+                              "deeds" : [],
+                              "notes" : []
+                            }],
+            "easements" : [{
+                              "text" : "The land *E<>E* is subject to the rights granted by a *DT**DE* dated *DD* made between *DP*. The said Deed also contains restrictive covenants by the grantor. *N<^NOTE: Copy in Certificate. Copy filed>N*.",
+                              "fields" : {"extent" : "tinted pink", "extent" : ""},
+                              "deeds" : [{"type" : "Deed", "date" : "03.03.1976", "parties" : [{"title" : "Mr", "first_name" : "Michael", "surname" : "Jones", "decoration" : ""},{"title" : "Mr", "first_name" : "Jeff", "surname" : "Smith", "decoration" : ""}]}],
+                              "notes" : [{"text" : "Copy filed", "font" : "I"}]
+                            }],
+            "provisions" : [{
+                              "text" : "A *DT**DE* dated *DD* made between *DP* contains the following provision:-*VT*",
+                              "fields" : {"extent" : "of the land in this title", "verbatim_text" : "The land has the benefit of a right of way along the passageway to the rear of the property, and also a right of way on foot only on to the open ground on the north west boundary of the land in this title"},
+                              "deeds" : [{"type" : "Transfer", "date" : "01.06.1996", "parties" : [{"title" : "Mr", "first_name" : "Michael", "surname" : "Jones", "decoration" : ""},{"title" : "Mr", "first_name" : "Jeff", "surname" : "Smith", "decoration" : ""}]}],
+                              "notes" : []
+                            }],
+            "price_paid" : {
+                              "text" : "The price stated to have been paid on *DA* was *AM*.",
+                              "fields" : {"date" : "15/11/2005", "amount" : "£100,000"},
+                              "deeds" : [],
+                              "notes" : []
+                            }
+
     }
-  ],
-  "title_number": "TN1234567",
-  "property": {
-    "address": {
-      "house_number": "1",
-      "town": "Albuquerque",
-      "postcode": "98765",
-      "road": "Somewhere"
-    },
-    "class_of_title": "qualified",
-    "tenure": "freehold"
-  },
-  "payment": {
-    "titles": ["1234"],
-    "price_paid": "987654321"
-  },
-  "charges": [
-          {
-              "charge_date": "2014-08-11",
-              "chargee_address": "a warehouse",
-              "chargee_name": "compone",
-              "chargee_registration_number": "12345"
-          },
-          {
-              "charge_date": "2014-08-12",
-              "chargee_address": "a barn",
-              "chargee_name": "comptwo",
-              "chargee_registration_number": "56666"
-          }
-      ]
-}

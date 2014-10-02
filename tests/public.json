@@ -1,17 +1,40 @@
-{
-  "title_number": "TN1234567",
-  "property": {
-    "address": {
-      "house_number": "1",
-      "town": "Albuquerque",
-      "postcode": "98765",
-      "road": "Somewhere"
-    },
-    "class_of_title": "qualified",
-    "tenure": "freehold"
-  },
-  "payment": {
-    "titles": ["1234"],
-    "price_paid": "987654321"
-  }
-}
+    {
+            "property_description" : {
+                                        "text" : "The Freehold land shown edged with red on the plan of the above Title filed at the Registry and being *AD*",
+                                        "fields" : {"address" : {"full_address": "8 Miller Way, Plymouth, Devon, PL6 8UQ", "house_no" : "8", "street_name" : "Miller Way", "town" : "Plymouth", "postal_county" : "Devon", "region_name" : "", "country" : ""}},
+                                        "deeds" : [],
+                                        "notes" : []
+                                      },
+
+            "title_number": "TEST_AB1234567",
+
+            "extent": {
+                "type": "Feature",
+                "crs": {
+                    "type":"name",
+                    "properties":{
+                        "name":"urn:ogc:def:crs:EPSG:27700"
+                    }
+                },
+                "geometry":{
+                    "type":"Polygon",
+                    "coordinates":[
+                        [[530857.01,181500.00],
+                        [530857.00,181500.00],
+                        [530857.00,181500.00],
+                        [530857.00,181500.00],
+                        [530857.01,181500.00]]
+                    ]
+                },
+                "properties":{
+                }
+            },
+
+
+            "price_paid" : {
+                              "text" : "The price stated to have been paid on *DA* was *AM*.",
+                              "fields" : {"date" : "15/11/2005", "amount" : "£100,000"},
+                              "deeds" : [],
+                              "notes" : []
+                            }
+    }
