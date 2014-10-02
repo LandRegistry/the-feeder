@@ -15,7 +15,7 @@ after_success:
 deploy:
   provider: heroku
   api_key:
-    secure: m2dYxAqaYjRL8guNmIsoB8s1nbmh+OvzISD3G05PtqLE7sKDJCv6wNCsaBBX6swoDPBVeon/d/rQQynfq+/CKtSM+yG2WghZoDia2Gi6i5d9NCaxGW2DdqDi2litrM0zqXaXhInDHtQkuG0DY/mw8E2NbN9CBehcZbkOBrgMuww=
-  app: the-feeder
+    secure: Di9HVqJDZwgwMmskdEegP6omdUprlYhzyrvgiqucOpIpfuTPlyWSQ1NMIyaqrn2KNC0sXRtvgz3CjNsR53hqX24XWbBQTWQs7JJzOGL/6M5+9GwdiPhFaMcQaLjZ/aLVafaEVLUisyaXb/HVFoMFGQZZhcLQn6Xjbx06KXmIcWk=
+  app: lr-feeder-app
   on:
     repo: LandRegistry/the-feeder
