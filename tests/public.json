@@ -7,16 +7,6 @@
                                       },
 
             "title_number": "TEST_AB1234567",
-            "property": {
-                "address": {
-                  "house_number": "1",
-                  "town": "Albuquerque",
-                  "postcode": "98765",
-                  "road": "Somewhere"
-                },
-                "class_of_title": "qualified",
-                "tenure": "freehold"
-              },
 
             "extent": {
                 "type": "Feature",
