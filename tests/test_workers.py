@@ -16,12 +16,12 @@ class WorkersTestCase(unittest.TestCase):
         with open('tests/original.json') as data_file:
             dictionary = json.load(data_file, object_pairs_hook=collections.OrderedDict)
             # the authenticated data would be unadulterated original data
-            self.expected_authenticated_data = dictionary
+            self.expected_authenticated_data = dictionary[u'object'][u'data']
             pickled = pickle.dumps(dictionary)
             self.test_message = ('titles_queue', pickled)
 
         with open('tests/public.json') as data_file:
-            self.expected_public_data = json.load(data_file, object_pairs_hook=collections.OrderedDict)
+            self.expected_public_data = json.load(data_file, object_pairs_hook=collections.OrderedDict)[u'object'][u'data']
 
         self.public_feed = 'http://search-api/load/public_titles'
         self.authenticated_feed = 'http://search-api/load/authenticated_titles'
