@@ -1,11 +1,14 @@
 import cPickle as pickle
 
 from thefeeder import logger, public_message_validator
+import base64
+import json
+import collections
 
 
 def pickle_loads_data(message):
     depickled = pickle.loads(message[1])
-    return depickled[u'object'][u'data']
+    return json.loads(base64.b64decode(depickled[u'object'][u'data']), object_pairs_hook=collections.OrderedDict)
 
 def authenticated_filter(message):
     # presumably return the data "as-is"

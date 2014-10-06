@@ -9,19 +9,23 @@ from thefeeder import redis_queue, queue_key
 from thefeeder.feed_consumer import FeedConsumer
 from thefeeder.feed_worker import FeedWorker
 from thefeeder.filters import public_filter, authenticated_filter
-
+import base64
 
 class WorkersTestCase(unittest.TestCase):
     def setUp(self):
         with open('tests/original.json') as data_file:
             dictionary = json.load(data_file, object_pairs_hook=collections.OrderedDict)
             # the authenticated data would be unadulterated original data
-            self.expected_authenticated_data = dictionary[u'object'][u'data']
+            tmp = base64.b64decode(dictionary[u'object'][u'data'])
+            self.expected_authenticated_data = json.dumps(json.loads(tmp, object_pairs_hook=collections.OrderedDict))
             pickled = pickle.dumps(dictionary)
             self.test_message = ('titles_queue', pickled)
 
         with open('tests/public.json') as data_file:
-            self.expected_public_data = json.load(data_file, object_pairs_hook=collections.OrderedDict)[u'object'][u'data']
+            dictionary = json.load(data_file)
+            tmp = base64.b64decode(dictionary[u'object'][u'data'])
+            # get rid of whitespace in JSON
+            self.expected_public_data = json.dumps(json.loads(tmp, object_pairs_hook=collections.OrderedDict))
 
         self.public_feed = 'http://search-api/load/public_titles'
         self.authenticated_feed = 'http://search-api/load/authenticated_titles'
@@ -31,27 +35,32 @@ class WorkersTestCase(unittest.TestCase):
 
     def test_extract_public_data_from_message(self):
         public_data = public_filter(self.test_message)
-        assert public_data == self.expected_public_data
+        assert public_data == json.loads(self.expected_public_data)
 
 
     def test_extract_data_that_needs_authentication_from_message(self):
         private_data = authenticated_filter(self.test_message)
-        assert private_data == self.expected_authenticated_data
+        assert private_data == json.loads(self.expected_authenticated_data)
 
 
     @mock.patch("requests.put")
     def test_worker_should_put_public_data_to_public_destination(self, mock_put):
         worker = FeedWorker(self.public_feed, public_filter)
         worker.do_work(self.test_message)
-        mock_put.assert_called_with(self.public_feed, data=json.dumps(self.expected_public_data), headers=self.headers)
+        mock_put.assert_called_with(
+                self.public_feed,
+                data=self.expected_public_data,
+                headers=self.headers)
 
 
     @mock.patch("requests.put")
     def test_worker_should_put_authenticated_data_to_authenicated_destination(self, mock_put):
         worker = FeedWorker(self.authenticated_feed, authenticated_filter)
         worker.do_work(self.test_message)
-        mock_put.assert_called_with(self.authenticated_feed, data=json.dumps(self.expected_authenticated_data),
-                                    headers=self.headers)
+        mock_put.assert_called_with(
+                self.authenticated_feed,
+                data=self.expected_authenticated_data,
+                headers=self.headers)
 
 
     @mock.patch("redis.Redis.blpop")
