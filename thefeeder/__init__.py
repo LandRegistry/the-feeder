@@ -21,6 +21,7 @@ queue_key = os.environ.get('REDIS_QUEUE_KEY')
 public_search_api = os.environ.get('PUBLIC_SEARCH_API_URL', '') + os.environ.get('PUBLIC_SEARCH_API_ENDPOINT', '')
 authenticated_search_api = os.environ.get('AUTHENTICATED_SEARCH_API_URL', '') + os.environ.get('AUTHENTICATED_SEARCH_API_ENDPOINT', '')
 geo_api = os.environ.get('GEO_API_URL', '') + os.environ.get('GEO_API_ENDPOINT', '')
+historian_api = os.environ.get('HISTORIAN_API_URL', '') + os.environ.get('HISTORIAN_API_ENDPOINT', '')
 redis_queue = None
 public_message_validator = PublicMessageDatatype()
 

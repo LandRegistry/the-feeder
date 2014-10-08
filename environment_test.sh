@@ -1,5 +1,5 @@
 export SETTINGS='TEST'
-export REDIS_QUEUE_KEY='titles_queue'
+export REDIS_QUEUE_KEY='chain_queue'
 export REDIS_URL='localhost'
 export PUBLIC_SEARCH_API_URL='http://search-api.landregistry.local'
 export PUBLIC_SEARCH_API_ENDPOINT='/load/public_titles'

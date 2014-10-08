@@ -16,14 +16,13 @@ class WorkersTestCase(unittest.TestCase):
         with open('tests/original.json') as data_file:
             dictionary = json.load(data_file, object_pairs_hook=collections.OrderedDict)
             # the authenticated data would be unadulterated original data
-            tmp = base64.b64decode(dictionary[u'object'][u'data'])
+            tmp = base64.b64decode(dictionary[u'message_envelope'][u'message'][u'message'][u'object'][u'data'])
             self.expected_authenticated_data = json.dumps(json.loads(tmp, object_pairs_hook=collections.OrderedDict))
-            pickled = pickle.dumps(dictionary)
-            self.test_message = ('titles_queue', pickled)
+            self.test_message = dictionary 
 
         with open('tests/public.json') as data_file:
             dictionary = json.load(data_file)
-            tmp = base64.b64decode(dictionary[u'object'][u'data'])
+            tmp = base64.b64decode(dictionary[u'message_envelope'][u'message'][u'message'][u'object'][u'data'])
             # get rid of whitespace in JSON
             self.expected_public_data = json.dumps(json.loads(tmp, object_pairs_hook=collections.OrderedDict))
 
@@ -92,12 +91,3 @@ class WorkersTestCase(unittest.TestCase):
         worker = FeedWorker(self.public_feed, public_filter)
         worker.do_work(self.test_message)
         mock_log_error.assert_called_with(mock.ANY)
-
-
-    @mock.patch("cPickle.loads", side_effect=pickle.UnpicklingError)
-    @mock.patch("thefeeder.logger.error")
-    def test_dowork_catches_and_logs_unpickling_error(self, mock_filter, mock_log_error):
-        worker = FeedWorker(self.public_feed, public_filter)
-        worker.do_work(self.test_message)
-        mock_log_error.assert_called_with(mock.ANY)
-
