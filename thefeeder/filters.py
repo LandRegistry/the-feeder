@@ -12,7 +12,14 @@ def get_data(data, chain_name=u'type'):
     For history, chain_name == history
     """
     message = data[u'message_envelope'][u'message']
-    if message[u'chain_name'] == chain_name:
+
+    check = False
+    if chain_name == 'type':
+        check = data[u'message_envelope'][u'caused_by_blockchain_insert_id'] == message[u'message'][u'object'][u'blockchain_index']
+    elif chain_name == 'history':
+        check = data[u'message_envelope'][u'caused_by_blockchain_insert_id'] > message[u'message'][u'object'][u'blockchain_index']
+
+    if message[u'chain_name'] == chain_name and check:
         return json.loads(base64.b64decode(message[u'message'][u'object'][u'data']), object_pairs_hook=collections.OrderedDict)
     else:
         return None
