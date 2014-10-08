@@ -8,6 +8,8 @@ from voluptuous import All
 
 schema = {
     "title_number": All(str),
+    "tenure" : All(str),
+    "class_of_title" : All(str),
     "extent": geo_json_validator.geo_json_schema,
     "property_description": entry_validator.entry_schema,
     "price_paid": entry_validator.entry_schema,
@@ -34,6 +36,8 @@ class PublicMessageDatatype(DictionaryValidator):
     def define_error_dictionary(self):
         return {
             "title_number": "title_number is a required field",
+            "tenure": "title_number is a required field",
+            "class_of_title": "title_number is a required field",
             "property_description": "property_description is a required field",
             "price_paid": "price_paid is a required field",
             "extent": "Extent must be well formed",
