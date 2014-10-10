@@ -14,8 +14,9 @@ class FeedWorker(object):
     def do_work(self, message):
         try:
             data = self.filter(message)
-            logger.info("Filtered data %s from message" % (data))
-            self.send(data)
+            if data:
+                logger.info("Filtered data %s from message" % (data))
+                self.send(data)
         except pickle.UnpicklingError as e:
             logger.error("Error extracting data from message", exc_info=e)
 
