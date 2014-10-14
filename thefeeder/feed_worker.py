@@ -15,7 +15,7 @@ class FeedWorker(object):
         try:
             data = self.filter(message)
             if data:
-                logger.info("Filtered data %s from message" % (data))
+                logger.info("Filtered data %s from message" % data)
                 self.send(data)
         except pickle.UnpicklingError as e:
             logger.error("Error extracting data from message", exc_info=e)
@@ -27,14 +27,14 @@ class FeedWorker(object):
         try:
             payload = json.dumps(data)
 
-            # todo: all apis should accept put at /titles
-            if '<title_number>' in self.feed_url:
-                self.feed_url = self.feed_url.replace('<title_number>', data['title_number'])
+            url = self.feed_url
+            if '<title_number>' in url:
+                url = url.replace('<title_number>', data['title_number'])
 
-            response = requests.put(self.feed_url, data=payload, headers=headers)
-            logger.info("PUT to URL %s, status code %s, payload %s" % (self.feed_url, response.status_code, payload))
+            response = requests.put(url , data=payload, headers=headers)
+            logger.info("PUT to URL %s, status code %s, payload %s" % (url, response.status_code, payload))
         except requests.exceptions.RequestException as e:
-            logger.error("Error sending %s to %s: Error %s" % (data, self.feed_url, e))
+            logger.error("Error sending %s to %s: Error %s" % (data, url, e))
         except:
             e = sys.exc_info()[0]
             logger.error("Error extracting data from %s : Error %s" % (data, e))
