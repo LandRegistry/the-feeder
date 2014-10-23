@@ -1,8 +1,7 @@
 -e git+https://github.com/LandRegistry/datatypes#egg=datatypes
-blinker
-raven
-redis
-requests
-voluptuous
-wsgiref
-
+blinker==1.3
+raven==5.1.1
+redis==2.10.3
+requests==2.4.3
+voluptuous==0.8.6
+wsgiref==0.1.2
