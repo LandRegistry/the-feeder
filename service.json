@@ -1,0 +1,16 @@
+{
+  "name": "the-feeder",
+  "type": "back-end",
+  "github": "https://github.com/LandRegistry/the-feeder",
+  "heroku": "lr-feeder-app",
+  "url": null,
+  "port": null,
+  "database": "true",
+  "tech": [
+    "python"
+  ],
+  "dependencies": [
+    "redis",
+    "search-api"
+  ]
+}
